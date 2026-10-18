@@ -1,6 +1,5 @@
 name: UGV CI V&V Pipeline
 
-# 1. Trigger: Run this whenever someone pushes code to the 'dev' branch
 on:
   push:
     branches: [ "dev" ]
@@ -12,16 +11,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Pull the repository code onto the GitHub cloud machine
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # Step 2: Build the Docker image using your Dockerfile
       - name: Build Docker Testing Image
         run: |
           docker build -t ugv-vnv-test:latest .
 
-      # Step 3: Run the unit tests inside the built Docker container
       - name: Execute Pytest Unit Tests
         run: |
           docker run --rm ugv-vnv-test:latest
+
+      # --- NEW: REGISTRY PUSH STEPS ---
+      # 1. Tag the image for your registry address
+      - name: Tag Docker Image for Registry
+        run: |
+          docker tag ugv-vnv-test:latest localhost:5000/ugv-vnv-test:latest
+
+      # 2. Push the image to the registry 
+      # (In real deployment, you would also log into your registry first using docker login)
+      - name: Push Docker Image to Registry
+        run: |
+          docker push localhost:5000/ugv-vnv-test:latest
