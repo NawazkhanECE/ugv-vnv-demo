@@ -2,9 +2,9 @@ import pytest
 from app import parse_telemetry
 
 def test_parse_telemetry_normal():
-    # Test valid telemetry data
+    # We pass SPEED:30, but let's intentionally write an assertion that fails (e.g., expecting 99 instead of 30)
     speed, voltage = parse_telemetry("SPEED:30,VOLT:23.5")
-    assert speed == 30.0
+    assert speed == 99.0  # <-- INTENTIONAL ERROR: speed is actually 30!
     assert voltage == 23.5
 
 def test_parse_telemetry_safety_limit():
